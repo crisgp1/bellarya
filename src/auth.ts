@@ -4,9 +4,11 @@ import { authConfig } from '@/auth.config';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 
-// Temporary admin credentials (in production, use database)
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@bellarya.com';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync('admin123', 10);
+// Hardcoded admin credentials
+// Password: admin123
+// Hash generated with: bcrypt.hashSync('admin123', 10)
+const ADMIN_EMAIL = 'admin@bellarya.com';
+const ADMIN_PASSWORD_HASH = '$2b$10$Kf28TtCOLjsF.xehXVwWI.pxcFAWmdbuAidTBSCe.N5spw7VoM6Cm';
 
 async function getUser(email: string): Promise<{ id: string; name: string; email: string; password: string } | undefined> {
   try {

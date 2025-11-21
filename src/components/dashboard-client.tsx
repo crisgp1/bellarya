@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import { MenuItem, Categoria } from '@/types/menu';
 import { MenuTable } from './menu-table';
+import { MenuGrid } from './menu-grid';
 import { MenuForm } from './menu-form';
-import { Plus, SignOut, ForkKnife } from '@phosphor-icons/react';
+import { Plus, SignOut, ForkKnife, List, SquaresFour } from '@phosphor-icons/react';
 import { Button } from './ui/button';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+
+type ViewMode = 'list' | 'grid';
 
 export function DashboardClient() {
   const router = useRouter();
@@ -16,6 +19,7 @@ export function DashboardClient() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [filterCategory, setFilterCategory] = useState<Categoria | 'all'>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   useEffect(() => {
     fetchMenuItems();
@@ -114,63 +118,131 @@ export function DashboardClient() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 md:px-6 lg:px-12 py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+      <main className="container mx-auto px-4 md:px-6 lg:px-12 py-6 md:py-8">
+        <div className="mb-6 md:mb-8 space-y-4 md:space-y-6">
+          {/* Header with Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-semibold tracking-tight mb-2">
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-1 md:mb-2">
                 Menu Management
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm md:text-base text-muted-foreground">
                 Administra los platillos del menú
               </p>
             </div>
-            <Button
-              onClick={handleNewItem}
-              className="flex items-center gap-2 bg-foreground text-background hover:bg-foreground/90"
-            >
-              <Plus weight="bold" className="h-5 w-5" />
-              Nuevo Platillo
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* View Toggle */}
+              <div className="flex items-center border-2 border-border rounded-sm overflow-hidden">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-foreground text-background'
+                      : 'bg-background text-foreground hover:bg-muted'
+                  }`}
+                  title="Vista en cuadrícula"
+                >
+                  <SquaresFour weight="bold" className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-foreground text-background'
+                      : 'bg-background text-foreground hover:bg-muted'
+                  }`}
+                  title="Vista en lista"
+                >
+                  <List weight="bold" className="h-5 w-5" />
+                </button>
+              </div>
+              <Button
+                onClick={handleNewItem}
+                className="flex items-center gap-2 bg-foreground text-background hover:bg-foreground/90"
+                size="default"
+              >
+                <Plus weight="bold" className="h-5 w-5" />
+                <span className="hidden sm:inline">Nuevo Platillo</span>
+                <span className="sm:hidden">Nuevo</span>
+              </Button>
+            </div>
           </div>
 
-          {/* Filter */}
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={filterCategory === 'all' ? 'default' : 'outline'}
-              onClick={() => setFilterCategory('all')}
-              size="sm"
-            >
-              Todos ({menuItems.length})
-            </Button>
-            {['entradas', 'bellarya-in-casa', 'pescados', 'pollo', 'salmon', 'pulpo', 'camarones', 'mejillones', 'pizzas', 'pastas', 'postres', 'bebidas', 'vinos'].map((cat) => {
-              const count = menuItems.filter(item => item.categoria === cat).length;
-              return (
-                <Button
-                  key={cat}
-                  variant={filterCategory === cat ? 'default' : 'outline'}
-                  onClick={() => setFilterCategory(cat as Categoria)}
-                  size="sm"
-                >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)} ({count})
-                </Button>
-              );
-            })}
+          {/* Category Filter */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Filtrar por Categoría
+            </h3>
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant={filterCategory === 'all' ? 'default' : 'outline'}
+                onClick={() => setFilterCategory('all')}
+                size="sm"
+                className="text-xs md:text-sm"
+              >
+                Todos ({menuItems.length})
+              </Button>
+              {['entradas', 'bellarya-in-casa', 'pescados', 'pollo', 'salmon', 'pulpo', 'camarones', 'mejillones', 'pizzas', 'pastas', 'postres', 'bebidas', 'vinos'].map((cat) => {
+                const count = menuItems.filter(item => item.categoria === cat).length;
+                if (count === 0) return null;
+                return (
+                  <Button
+                    key={cat}
+                    variant={filterCategory === cat ? 'default' : 'outline'}
+                    onClick={() => setFilterCategory(cat as Categoria)}
+                    size="sm"
+                    className="text-xs md:text-sm capitalize"
+                  >
+                    {cat.replace('-', ' ')} ({count})
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
+        {/* Content */}
         {loading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12 md:py-20">
             <div className="text-muted-foreground">Cargando...</div>
           </div>
         ) : (
-          <MenuTable
-            items={filteredItems}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <>
+            {viewMode === 'list' ? (
+              <MenuTable
+                items={filteredItems}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ) : (
+              <MenuGrid
+                items={filteredItems}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            )}
+          </>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border/30 bg-background mt-12 md:mt-16">
+        <div className="container mx-auto px-4 md:px-6 lg:px-12 py-6">
+          <div className="text-center">
+            <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-[0.2em] font-medium">
+              Powered by{' '}
+              <a
+                href="https://hyrk.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold hover:text-foreground transition-colors"
+              >
+                HYRK.IO
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
 
       {/* Form Modal */}
       {isFormOpen && (
