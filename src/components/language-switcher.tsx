@@ -2,6 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Globe } from '@phosphor-icons/react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface LanguageSwitcherProps {
   currentLanguage: 'es' | 'en';
@@ -9,16 +15,12 @@ interface LanguageSwitcherProps {
 }
 
 export function LanguageSwitcher({ currentLanguage, onLanguageChange }: LanguageSwitcherProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleLanguageChange = (lang: 'es' | 'en') => {
     if (lang !== currentLanguage) {
       onLanguageChange(lang);
-      setIsOpen(false);
       setShowNotification(true);
 
       // Clear any existing timeout
@@ -42,78 +44,51 @@ export function LanguageSwitcher({ currentLanguage, onLanguageChange }: Language
     };
   }, []);
 
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setMenuPosition({
-        top: rect.bottom + 6,
-        right: window.innerWidth - rect.right,
-      });
-    }
-  }, [isOpen]);
-
   return (
     <>
-      {/* Language Switcher Button */}
-      <div className="relative">
-        <button
-          ref={buttonRef}
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 border border-border/30 hover:border-foreground/30 transition-all duration-300 bg-background/80 backdrop-blur-sm group"
-          aria-label="Change language"
-        >
-          <Globe weight="thin" className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-foreground/70 group-hover:text-foreground transition-colors" />
-          <span className="text-[10px] sm:text-xs md:text-sm font-light uppercase tracking-wider sm:tracking-widest text-foreground/70 group-hover:text-foreground transition-colors">
-            {currentLanguage}
-          </span>
-        </button>
-
-        {/* Dropdown - Portal con fixed positioning */}
-        {isOpen && (
-          <>
-            {/* Backdrop - higher z-index than navbar */}
-            <div
-              className="fixed inset-0 z-[100]"
-              onClick={() => setIsOpen(false)}
-            />
-
-            {/* Menu - higher z-index than navbar */}
-            <div
-              className="fixed z-[101] border-2 border-border bg-background shadow-xl min-w-[120px] sm:min-w-[140px] overflow-hidden"
-              style={{
-                top: `${menuPosition.top}px`,
-                right: `${menuPosition.right}px`,
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => handleLanguageChange('es')}
-                className={`w-full px-3 sm:px-5 py-2 sm:py-3 text-left text-xs sm:text-sm font-light uppercase tracking-wide transition-all duration-200 flex items-center justify-between ${
-                  currentLanguage === 'es'
-                    ? 'bg-foreground text-background'
-                    : 'hover:bg-muted text-foreground/80 hover:text-foreground'
-                }`}
-              >
-                <span>{currentLanguage === 'es' ? 'Español' : 'Spanish'}</span>
-                <span className="text-xs opacity-60">🇲🇽</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleLanguageChange('en')}
-                className={`w-full px-3 sm:px-5 py-2 sm:py-3 text-left text-xs sm:text-sm font-light uppercase tracking-wide transition-all duration-200 flex items-center justify-between ${
-                  currentLanguage === 'en'
-                    ? 'bg-foreground text-background'
-                    : 'hover:bg-muted text-foreground/80 hover:text-foreground'
-                }`}
-              >
-                <span>{currentLanguage === 'es' ? 'Inglés' : 'English'}</span>
-                <span className="text-xs opacity-60">🇺🇸</span>
-              </button>
+      {/* Language Switcher using shadcn DropdownMenu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 border border-border/30 hover:border-foreground/30 transition-all duration-300 bg-background/80 backdrop-blur-sm group"
+            aria-label="Change language"
+          >
+            <Globe weight="thin" className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-foreground/70 group-hover:text-foreground transition-colors" />
+            <span className="text-[10px] sm:text-xs md:text-sm font-light uppercase tracking-wider sm:tracking-widest text-foreground/70 group-hover:text-foreground transition-colors">
+              {currentLanguage}
+            </span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-[120px] sm:min-w-[140px] border-2">
+          <DropdownMenuItem
+            onClick={() => handleLanguageChange('es')}
+            className={`px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-light uppercase tracking-wide cursor-pointer ${
+              currentLanguage === 'es'
+                ? 'bg-foreground text-background'
+                : ''
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span>{currentLanguage === 'es' ? 'Español' : 'Spanish'}</span>
+              <span className="text-xs opacity-60">🇲🇽</span>
             </div>
-          </>
-        )}
-      </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => handleLanguageChange('en')}
+            className={`px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-light uppercase tracking-wide cursor-pointer ${
+              currentLanguage === 'en'
+                ? 'bg-foreground text-background'
+                : ''
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span>{currentLanguage === 'es' ? 'Inglés' : 'English'}</span>
+              <span className="text-xs opacity-60">🇺🇸</span>
+            </div>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Notification Toast */}
       {showNotification && (
