@@ -33,6 +33,9 @@ const ebGaramond = EB_Garamond({
 export const metadata: Metadata = {
   title: "Bellarya - Auténtica Cocina Italiana",
   description: "Experiencia gastronómica italiana de alta cocina en México",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
