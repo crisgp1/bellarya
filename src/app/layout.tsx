@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Lora, Playfair_Display, EB_Garamond } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth-provider";
 
 const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-display",
@@ -44,7 +45,9 @@ export default function RootLayout({
       <body
         className={`${cormorantGaramond.variable} ${playfairDisplay.variable} ${lora.variable} ${ebGaramond.variable} antialiased`}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

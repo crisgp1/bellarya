@@ -5,6 +5,7 @@ import { SearchFilterBar } from '@/components/search-filter-bar';
 import { CategorySection } from '@/components/category-section';
 import { LanguageSelector } from '@/components/language-selector';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { AdminButton } from '@/components/admin-button';
 import { categorias } from '@/lib/menu-data';
 import { FilterState, Categoria, MenuItem } from '@/types/menu';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
@@ -332,7 +333,8 @@ export default function Home() {
                   <h1 className="logo text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-wider font-medium">BELLARYA</h1>
                   <p className="display-text text-muted-foreground text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.3em] font-light italic">Cucina Italiana</p>
                 </div>
-                <div className="flex-1 sm:flex-1 flex justify-end">
+                <div className="flex-1 sm:flex-1 flex justify-end items-center gap-2">
+                  {mounted && <AdminButton />}
                   {mounted && <LanguageSwitcher currentLanguage={language} onLanguageChange={handleLanguageSelect} />}
                 </div>
               </div>
