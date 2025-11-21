@@ -85,6 +85,9 @@ export function DashboardClient() {
     ? menuItems
     : menuItems.filter(item => item.categoria === filterCategory);
 
+  // Get unique categories from menu items
+  const uniqueCategories = Array.from(new Set(menuItems.map(item => item.categoria))).sort();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -173,30 +176,31 @@ export function DashboardClient() {
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Filtrar por Categoría
             </h3>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                variant={filterCategory === 'all' ? 'default' : 'outline'}
-                onClick={() => setFilterCategory('all')}
-                size="sm"
-                className="text-xs md:text-sm"
-              >
-                Todos ({menuItems.length})
-              </Button>
-              {['entradas', 'bellarya-in-casa', 'pescados', 'pollo', 'salmon', 'pulpo', 'camarones', 'mejillones', 'pizzas', 'pastas', 'postres', 'bebidas', 'vinos'].map((cat) => {
-                const count = menuItems.filter(item => item.categoria === cat).length;
-                if (count === 0) return null;
-                return (
-                  <Button
-                    key={cat}
-                    variant={filterCategory === cat ? 'default' : 'outline'}
-                    onClick={() => setFilterCategory(cat as Categoria)}
-                    size="sm"
-                    className="text-xs md:text-sm capitalize"
-                  >
-                    {cat.replace('-', ' ')} ({count})
-                  </Button>
-                );
-              })}
+            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+              <div className="flex gap-2 min-w-max md:min-w-0 md:flex-wrap pb-2 md:pb-0">
+                <Button
+                  variant={filterCategory === 'all' ? 'default' : 'outline'}
+                  onClick={() => setFilterCategory('all')}
+                  size="sm"
+                  className="text-xs md:text-sm shrink-0"
+                >
+                  Todos ({menuItems.length})
+                </Button>
+                {uniqueCategories.map((cat) => {
+                  const count = menuItems.filter(item => item.categoria === cat).length;
+                  return (
+                    <Button
+                      key={cat}
+                      variant={filterCategory === cat ? 'default' : 'outline'}
+                      onClick={() => setFilterCategory(cat as Categoria)}
+                      size="sm"
+                      className="text-xs md:text-sm capitalize shrink-0"
+                    >
+                      {cat.replace(/-/g, ' ')} ({count})
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
