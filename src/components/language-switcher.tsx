@@ -72,15 +72,15 @@ export function LanguageSwitcher({ currentLanguage, onLanguageChange }: Language
         {/* Dropdown - Portal con fixed positioning */}
         {isOpen && (
           <>
-            {/* Backdrop - shadcn uses z-50 for overlays */}
+            {/* Backdrop - higher z-index than navbar */}
             <div
-              className="fixed inset-0 z-50"
+              className="fixed inset-0 z-[100]"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Menu - shadcn uses z-50 for dropdowns */}
+            {/* Menu - higher z-index than navbar */}
             <div
-              className="fixed z-50 border-2 border-border bg-background shadow-xl min-w-[120px] sm:min-w-[140px] overflow-hidden"
+              className="fixed z-[101] border-2 border-border bg-background shadow-xl min-w-[120px] sm:min-w-[140px] overflow-hidden"
               style={{
                 top: `${menuPosition.top}px`,
                 right: `${menuPosition.right}px`,

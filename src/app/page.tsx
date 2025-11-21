@@ -360,8 +360,6 @@ export default function Home() {
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgba(0,0,0,0.2) transparent',
                 WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-x',
-                scrollPaddingLeft: '0',
               }}
             >
               {categorias.map((cat) => (
