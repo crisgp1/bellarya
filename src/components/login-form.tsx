@@ -54,7 +54,7 @@ export function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="rounded-none border-border/30 focus:border-foreground/30 font-light"
-            placeholder="admin@bellarya.com"
+            placeholder="email@example.com"
             disabled={isLoading}
           />
         </div>
@@ -110,10 +110,6 @@ export function LoginForm() {
           )}
         </Button>
       </form>
-
-      <div className="mt-6 text-center text-xs text-muted-foreground/70">
-        <p>Default credentials: admin@bellarya.com / admin123</p>
-      </div>
     </div>
   );
 }
