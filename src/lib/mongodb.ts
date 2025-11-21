@@ -34,10 +34,11 @@ async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      dbName: 'bellarya',
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('✅ MongoDB conectado');
+      console.log('✅ MongoDB conectado a la base de datos: bellarya');
       return mongoose;
     });
   }
