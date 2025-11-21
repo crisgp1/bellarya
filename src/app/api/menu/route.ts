@@ -140,6 +140,28 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST endpoint removed for security
-// Use dedicated admin API with authentication for menu modifications
-// export async function POST(request: NextRequest) { ... }
+// POST - Create new menu item (admin only)
+export async function POST(request: NextRequest) {
+  try {
+    const session = await (await import('@/auth')).auth();
+    if (!session?.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    await dbConnect();
+
+    const newItem = await MenuItem.create(body);
+
+    return NextResponse.json({ success: true, data: newItem }, { status: 201 });
+  } catch (error) {
+    console.error('Error creating menu item:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create menu item' },
+      { status: 500 }
+    );
+  }
+}

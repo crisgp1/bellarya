@@ -1,6 +1,6 @@
 'use client';
 
-import { SignIn, SignOut, User } from '@phosphor-icons/react';
+import { SignIn, SignOut, UserCircle } from '@phosphor-icons/react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -21,15 +21,15 @@ export function AdminButton() {
   }
 
   if (!session?.user) {
-    // Not logged in - show discrete login icon
+    // Not logged in - show discrete login icon with subtle enhancement
     return (
       <Link
         href="/login"
-        className="p-2 hover:bg-muted transition-colors rounded-sm opacity-30 hover:opacity-100"
+        className="p-2 hover:bg-muted/50 transition-all duration-300 rounded-sm opacity-50 hover:opacity-100 border border-transparent hover:border-border/20"
         title="Admin Login"
         aria-label="Admin Login"
       >
-        <User weight="thin" className="h-4 w-4 text-foreground/70" />
+        <UserCircle weight="duotone" className="h-5 w-5 text-foreground/80 hover:text-foreground transition-colors" />
       </Link>
     );
   }
@@ -43,7 +43,7 @@ export function AdminButton() {
           className="p-2 hover:bg-muted transition-colors rounded-sm"
           aria-label="Admin Menu"
         >
-          <User weight="fill" className="h-4 w-4 text-foreground" />
+          <UserCircle weight="fill" className="h-5 w-5 text-foreground" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
