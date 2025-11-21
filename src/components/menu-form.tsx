@@ -5,7 +5,7 @@ import { MenuItem, Categoria } from '@/types/menu';
 import { X, FloppyDisk } from '@phosphor-icons/react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { categorias, proteinasDisponibles } from '@/lib/menu-data';
+import { categorias } from '@/lib/menu-data';
 
 interface MenuFormProps {
   item: MenuItem | null;
@@ -72,12 +72,31 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
     }
   };
 
+  const [newProteina, setNewProteina] = useState('');
+
   const toggleProteina = (prot: string) => {
     setFormData(prev => ({
       ...prev,
       proteina: prev.proteina?.includes(prot)
         ? prev.proteina.filter(p => p !== prot)
         : [...(prev.proteina || []), prot]
+    }));
+  };
+
+  const addProteina = () => {
+    if (newProteina.trim() && !formData.proteina?.includes(newProteina.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        proteina: [...(prev.proteina || []), newProteina.trim()]
+      }));
+      setNewProteina('');
+    }
+  };
+
+  const removeProteina = (prot: string) => {
+    setFormData(prev => ({
+      ...prev,
+      proteina: prev.proteina?.filter(p => p !== prot) || []
     }));
   };
 
@@ -295,22 +314,51 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
               <label className="block text-sm font-medium mb-2">
                 Proteínas
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {proteinasDisponibles.map((prot) => (
-                  <button
-                    key={prot}
-                    type="button"
-                    onClick={() => toggleProteina(prot)}
-                    className={`px-4 py-2 text-sm border transition-colors ${
-                      formData.proteina?.includes(prot)
-                        ? 'bg-foreground text-background border-foreground'
-                        : 'border-border hover:border-foreground/30'
-                    }`}
-                  >
-                    {prot}
-                  </button>
-                ))}
+
+              {/* Add new protein */}
+              <div className="flex gap-2 mb-3">
+                <Input
+                  value={newProteina}
+                  onChange={(e) => setNewProteina(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addProteina();
+                    }
+                  }}
+                  placeholder="Agregar proteína (ej: Res, Cerdo, Tofu...)"
+                  className="rounded-sm flex-1"
+                />
+                <Button
+                  type="button"
+                  onClick={addProteina}
+                  variant="outline"
+                  className="shrink-0"
+                >
+                  Agregar
+                </Button>
               </div>
+
+              {/* Selected proteins */}
+              {formData.proteina && formData.proteina.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formData.proteina.map((prot) => (
+                    <div
+                      key={prot}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-foreground text-background border-2 border-foreground"
+                    >
+                      <span>{prot}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeProteina(prot)}
+                        className="hover:opacity-70 transition-opacity"
+                      >
+                        <X weight="bold" className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Opciones */}
