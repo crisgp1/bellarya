@@ -156,7 +156,7 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
                   required
                   value={formData.categoria}
                   onChange={(e) => setFormData({ ...formData, categoria: e.target.value as Categoria })}
-                  className="w-full h-10 px-3 border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+                  className="w-full h-10 px-3 py-2 rounded-sm border-2 border-border bg-background text-sm focus:outline-none focus:border-foreground focus:ring-2 focus:ring-foreground/20 hover:border-foreground/50 transition-all"
                 >
                   {categorias.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -198,7 +198,7 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
                   required
                   value={formData.descripcion}
                   onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                  className="w-full min-h-[100px] px-3 py-2 border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+                  className="w-full min-h-[100px] px-3 py-2 rounded-sm border-2 border-border bg-background text-sm focus:outline-none focus:border-foreground focus:ring-2 focus:ring-foreground/20 hover:border-foreground/50 transition-all"
                   rows={4}
                 />
               </div>
@@ -210,7 +210,7 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
                 <textarea
                   value={formData.descripcionEn || ''}
                   onChange={(e) => setFormData({ ...formData, descripcionEn: e.target.value })}
-                  className="w-full min-h-[100px] px-3 py-2 border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+                  className="w-full min-h-[100px] px-3 py-2 rounded-sm border-2 border-border bg-background text-sm focus:outline-none focus:border-foreground focus:ring-2 focus:ring-foreground/20 hover:border-foreground/50 transition-all"
                   rows={4}
                 />
               </div>
