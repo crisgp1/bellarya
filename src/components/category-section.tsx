@@ -109,22 +109,34 @@ export function CategorySection({ categoria, items, onIntersect }: CategorySecti
 
   const categoriaTitulosEs: Record<Categoria, string> = {
     entradas: 'Entradas',
-    pastas: 'Pastas',
-    proteinas: 'Proteínas',
+    'bellarya-in-casa': 'Bellarya In Casa',
+    pescados: 'Pescados',
+    pollo: 'Pollo',
+    salmon: 'Salmón',
+    pulpo: 'Pulpo',
+    camarones: 'Camarones',
+    mejillones: 'Mejillones',
     pizzas: 'Pizzas',
+    pastas: 'Pastas',
+    postres: 'Postres',
     bebidas: 'Bebidas',
     vinos: 'Vinos',
-    postres: 'Postres',
   };
 
   const categoriaTitulosEn: Record<Categoria, string> = {
     entradas: 'Appetizers',
-    pastas: 'Pastas',
-    proteinas: 'Proteins',
+    'bellarya-in-casa': 'Bellarya In Casa',
+    pescados: 'Fish',
+    pollo: 'Chicken',
+    salmon: 'Salmon',
+    pulpo: 'Octopus',
+    camarones: 'Shrimp',
+    mejillones: 'Mussels',
     pizzas: 'Pizzas',
+    pastas: 'Pastas',
+    postres: 'Desserts',
     bebidas: 'Drinks',
     vinos: 'Wines',
-    postres: 'Desserts',
   };
 
   const categoriaTitulos = language === 'en' ? categoriaTitulosEn : categoriaTitulosEs;
@@ -142,8 +154,8 @@ export function CategorySection({ categoria, items, onIntersect }: CategorySecti
         <div className="w-32 md:w-40 h-0.5 bg-foreground"></div>
       </div>
       <div ref={gridRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
-        {displayItems.map((item) => (
-          <MenuCard key={item.id} item={item} />
+        {displayItems.map((item, index) => (
+          <MenuCard key={item._id || item.id || `${item.nombre}-${index}`} item={item} />
         ))}
       </div>
       {items.length > maxItems && (

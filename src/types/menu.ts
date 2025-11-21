@@ -1,9 +1,10 @@
-export type Categoria = 'entradas' | 'pastas' | 'proteinas' | 'pizzas' | 'bebidas' | 'vinos' | 'postres';
+export type Categoria = 'entradas' | 'bellarya-in-casa' | 'pescados' | 'pollo' | 'salmon' | 'pulpo' | 'camarones' | 'mejillones' | 'pizzas' | 'pastas' | 'postres' | 'bebidas' | 'vinos';
 
 export type Alergeno = 'gluten' | 'lacteos' | 'huevo' | 'pescado' | 'mariscos' | 'frutos-secos' | 'soja' | 'apio' | 'mostaza' | 'sesamo' | 'sulfitos';
 
 export interface MenuItem {
-  id: string;
+  _id?: string; // MongoDB ID
+  id?: string; // Optional custom ID
   nombre: string;
   nombreItalia?: string;
   categoria: Categoria;
@@ -15,6 +16,7 @@ export interface MenuItem {
   picante?: boolean;
   destacado?: boolean;
   alergenos?: Alergeno[];
+  preparadoEnMesa?: boolean;
   // English translations
   nombreEn?: string;
   nombreItaliaEn?: string;

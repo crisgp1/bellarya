@@ -246,42 +246,54 @@
 
   /* Custom scrollbar for navigation */
   .scrollbar-thin {
-    -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     overscroll-behavior-x: contain;
+    scrollbar-width: thin;
   }
 
-  .scrollbar-thin::-webkit-scrollbar {
-    height: 6px;
+  /* Desktop scrollbar styles */
+  @media (hover: hover) and (pointer: fine) {
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: oklch(0.15 0 0 / 0.2);
+      border-radius: 0;
+    }
+
+    .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+      background: oklch(0.15 0 0 / 0.4);
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb:active {
+      background: oklch(0.15 0 0 / 0.6);
+    }
   }
 
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: oklch(0.15 0 0 / 0.2);
-    border-radius: 0;
-  }
-
-  .scrollbar-thin:hover::-webkit-scrollbar-thumb {
-    background: oklch(0.15 0 0 / 0.4);
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:active {
-    background: oklch(0.15 0 0 / 0.6);
-  }
-
-  /* Mejorar scroll touch en móvil */
+  /* Mobile touch improvements - hide scrollbar and ensure smooth native scrolling */
   @media (hover: none) and (pointer: coarse) {
     .scrollbar-thin {
       scroll-snap-type: none;
-      -webkit-overflow-scrolling: touch;
       overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: auto;
     }
 
     .scrollbar-thin::-webkit-scrollbar {
       display: none;
+      width: 0;
+      height: 0;
+    }
+
+    /* Ensure buttons inside don't interfere with touch scrolling */
+    .scrollbar-thin button {
+      touch-action: manipulation;
     }
   }
 }

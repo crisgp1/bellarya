@@ -19,7 +19,21 @@ const menuItemSchema = new Schema<IMenuItem>(
     categoria: {
       type: String,
       required: true,
-      enum: ['entradas', 'pastas', 'proteinas', 'pizzas', 'bebidas', 'vinos', 'postres'],
+      enum: [
+        'entradas',
+        'bellarya-in-casa',
+        'pescados',
+        'pollo',
+        'salmon',
+        'pulpo',
+        'camarones',
+        'mejillones',
+        'pizzas',
+        'pastas',
+        'postres',
+        'bebidas',
+        'vinos'
+      ],
       index: true,
     },
     subcategoria: {
@@ -71,6 +85,7 @@ const menuItemSchema = new Schema<IMenuItem>(
   },
   {
     timestamps: true,
+    collection: 'menuItems', // Explicitly specify collection name
   }
 );
 

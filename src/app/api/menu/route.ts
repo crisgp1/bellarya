@@ -24,7 +24,21 @@ interface MenuItemDoc {
 }
 
 // Whitelist of allowed categories
-const ALLOWED_CATEGORIES = ['entradas', 'proteinas', 'pastas', 'pizzas', 'postres', 'bebidas', 'vinos'];
+const ALLOWED_CATEGORIES = [
+  'entradas',
+  'bellarya-in-casa',
+  'pescados',
+  'pollo',
+  'salmon',
+  'pulpo',
+  'camarones',
+  'mejillones',
+  'pizzas',
+  'pastas',
+  'postres',
+  'bebidas',
+  'vinos'
+];
 const ALLOWED_LANGUAGES = ['es', 'en'];
 
 // Sanitize and validate query parameters

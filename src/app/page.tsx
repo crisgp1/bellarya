@@ -184,16 +184,27 @@ export default function Home() {
   const itemsByCategory = useMemo(() => {
     const grouped: Record<Categoria, typeof menuItems> = {
       entradas: [],
-      pastas: [],
-      proteinas: [],
+      'bellarya-in-casa': [],
+      pescados: [],
+      pollo: [],
+      salmon: [],
+      pulpo: [],
+      camarones: [],
+      mejillones: [],
       pizzas: [],
+      pastas: [],
+      postres: [],
       bebidas: [],
       vinos: [],
-      postres: [],
     };
 
     filteredItems.forEach((item) => {
-      grouped[item.categoria].push(item);
+      // Skip items with invalid categories (for backwards compatibility)
+      if (grouped[item.categoria]) {
+        grouped[item.categoria].push(item);
+      } else {
+        console.warn(`Item "${item.nombre}" has invalid category: ${item.categoria}`);
+      }
     });
 
     return grouped;
@@ -239,15 +250,9 @@ export default function Home() {
       // Actualizar tab inmediatamente
       setActiveTab(categoria);
 
-      // Scroll automático al tab
-      const tabElement = document.getElementById(`tab-${categoria}`);
-      if (tabElement && navScrollRef.current) {
-        tabElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
-        });
-      }
+      // NO hacer scroll automático del navbar cuando el usuario hace clic
+      // El usuario debe poder deslizar el navbar manualmente después del clic
+      // Solo scrollearemos el navbar cuando se hace scroll en las secciones (handleCategoryIntersect)
 
       // Usar scrollIntoView que respeta scroll-margin-top de las secciones
       element.scrollIntoView({
@@ -270,8 +275,12 @@ export default function Home() {
   const checkScrollButtons = () => {
     if (!navScrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = navScrollRef.current;
-    setShowLeftScroll(scrollLeft > 10);
-    setShowRightScroll(scrollLeft < scrollWidth - clientWidth - 10);
+
+    // Use requestAnimationFrame to throttle updates and prevent layout thrashing
+    requestAnimationFrame(() => {
+      setShowLeftScroll(scrollLeft > 10);
+      setShowRightScroll(scrollLeft < scrollWidth - clientWidth - 10);
+    });
   };
 
   const scrollNav = (direction: 'left' | 'right') => {
@@ -333,33 +342,20 @@ export default function Home() {
           {/* Navbar */}
           <div className="bg-background/95 backdrop-blur-lg border-y-2 border-border w-full">
           <div className="container mx-auto relative px-0">
-            {/* Botón scroll izquierda */}
-            {showLeftScroll && (
-              <button
-                type="button"
-                onClick={() => scrollNav('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-full px-2 sm:px-3 bg-gradient-to-r from-background via-background/95 to-transparent flex items-center"
-                aria-label="Scroll left"
-              >
-                <div className="bg-foreground text-background p-1.5 sm:p-2 hover:bg-foreground/90 transition-all rounded-sm">
-                  <CaretLeft weight="bold" className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                </div>
-              </button>
-            )}
-
             {/* Gradiente izquierdo (solo visual) */}
             {showLeftScroll && (
               <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 md:w-20 bg-gradient-to-r from-background/80 to-transparent pointer-events-none z-[5]" />
             )}
 
-            {/* Contenedor scrollable */}
+            {/* Contenedor scrollable - Increased z-index and improved mobile touch */}
             <div
               ref={navScrollRef}
-              className="w-full flex justify-start md:justify-center overflow-x-auto gap-1.5 sm:gap-2 py-1 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-foreground/40 px-4 md:px-6 lg:px-12"
+              className="relative z-[6] w-full flex justify-start md:justify-center overflow-x-auto gap-1.5 sm:gap-2 py-1 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-foreground/40 px-4 md:px-6 lg:px-12"
               style={{
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgba(0,0,0,0.2) transparent',
                 WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x',
               }}
             >
               {categorias.map((cat) => (
@@ -368,11 +364,12 @@ export default function Home() {
                   id={`tab-${cat.id}`}
                   type="button"
                   onClick={() => scrollToCategory(cat.id as Categoria)}
-                  className={`min-h-[40px] sm:min-h-[44px] px-4 sm:px-5 md:px-7 whitespace-nowrap text-xs sm:text-sm md:text-base uppercase tracking-wide font-semibold transition-all flex-shrink-0 ${
+                  className={`min-h-[40px] sm:min-h-[44px] px-4 sm:px-5 md:px-7 whitespace-nowrap text-xs sm:text-sm md:text-base uppercase tracking-wide font-semibold transition-all flex-shrink-0 touch-manipulation ${
                     activeTab === cat.id
                       ? 'bg-foreground text-background'
                       : 'bg-transparent hover:bg-muted'
                   }`}
+                  style={{ touchAction: 'manipulation' }}
                 >
                   {language === 'en' ? cat.labelEn : cat.label}
                 </button>
@@ -384,16 +381,32 @@ export default function Home() {
               <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 md:w-20 bg-gradient-to-l from-background/80 to-transparent pointer-events-none z-[5]" />
             )}
 
-            {/* Botón scroll derecha */}
+            {/* Botón scroll izquierda - Hidden on mobile, fixed positioning */}
+            {showLeftScroll && (
+              <button
+                type="button"
+                onClick={() => scrollNav('left')}
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 px-2 sm:px-3 bg-gradient-to-r from-background via-background/95 to-transparent items-center pointer-events-auto"
+                style={{ height: 'calc(100% - 2px)' }}
+                aria-label="Scroll left"
+              >
+                <div className="bg-foreground text-background p-1.5 sm:p-2 hover:bg-foreground/90 transition-all rounded-sm">
+                  <CaretLeft weight="bold" className="h-4 w-4 md:h-5 md:w-5" />
+                </div>
+              </button>
+            )}
+
+            {/* Botón scroll derecha - Hidden on mobile, fixed positioning */}
             {showRightScroll && (
               <button
                 type="button"
                 onClick={() => scrollNav('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-full px-2 sm:px-3 bg-gradient-to-l from-background via-background/95 to-transparent flex items-center"
+                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 px-2 sm:px-3 bg-gradient-to-l from-background via-background/95 to-transparent items-center pointer-events-auto"
+                style={{ height: 'calc(100% - 2px)' }}
                 aria-label="Scroll right"
               >
                 <div className="bg-foreground text-background p-1.5 sm:p-2 hover:bg-foreground/90 transition-all rounded-sm">
-                  <CaretRight weight="bold" className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                  <CaretRight weight="bold" className="h-4 w-4 md:h-5 md:w-5" />
                 </div>
               </button>
             )}
@@ -412,6 +425,7 @@ export default function Home() {
             onSearchChange={setSearchQuery}
             filters={filters}
             onFiltersChange={setFilters}
+            language={language}
           />
 
           <main className="py-4 md:py-6 lg:py-8">

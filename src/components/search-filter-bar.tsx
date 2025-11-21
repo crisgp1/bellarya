@@ -13,6 +13,7 @@ interface SearchFilterBarProps {
   onSearchChange: (value: string) => void;
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
+  language: 'es' | 'en'; // Receive language from parent
 }
 
 export function SearchFilterBar({
@@ -20,17 +21,8 @@ export function SearchFilterBar({
   onSearchChange,
   filters,
   onFiltersChange,
+  language,
 }: SearchFilterBarProps) {
-  // Initialize language directly from localStorage (no effect needed)
-  const [language, setLanguage] = useState<'es' | 'en'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('preferred-language');
-      if (savedLanguage === 'en' || savedLanguage === 'es') {
-        return savedLanguage;
-      }
-    }
-    return 'es';
-  });
 
   const activeFiltersCount = [
     filters.precioRango !== 'todos',
