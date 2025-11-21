@@ -3,29 +3,29 @@ import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from '@/auth.config';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import dbConnect from '@/lib/mongodb';
+import User from '@/models/User';
 
-// Hardcoded admin credentials
-// Password: admin123
-// Hash generated with: bcrypt.hashSync('admin123', 10)
-const ADMIN_EMAIL = 'admin@bellarya.com';
-const ADMIN_PASSWORD_HASH = '$2b$10$Kf28TtCOLjsF.xehXVwWI.pxcFAWmdbuAidTBSCe.N5spw7VoM6Cm';
-
-async function getUser(email: string): Promise<{ id: string; name: string; email: string; password: string } | undefined> {
+async function getUser(email: string): Promise<{ id: string; name: string; email: string; password: string; role: string } | null> {
   try {
-    // For now, return hardcoded admin user
-    // In production, fetch from database
-    if (email === ADMIN_EMAIL) {
-      return {
-        id: '1',
-        name: 'Admin',
-        email: ADMIN_EMAIL,
-        password: ADMIN_PASSWORD_HASH,
-      };
+    await dbConnect();
+
+    const user = await User.findOne({ email: email.toLowerCase(), active: true }).lean();
+
+    if (!user) {
+      return null;
     }
-    return undefined;
+
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+    };
   } catch (error) {
     console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
+    return null;
   }
 }
 
@@ -41,7 +41,10 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
-          if (!user) return null;
+          if (!user) {
+            console.log('User not found');
+            return null;
+          }
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
 
@@ -50,6 +53,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               id: user.id,
               name: user.name,
               email: user.email,
+              role: user.role,
             };
           }
         }
