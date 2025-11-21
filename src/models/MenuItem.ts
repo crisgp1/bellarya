@@ -19,21 +19,6 @@ const menuItemSchema = new Schema<IMenuItem>(
     categoria: {
       type: String,
       required: true,
-      enum: [
-        'entradas',
-        'bellarya-in-casa',
-        'pescados',
-        'pollo',
-        'salmon',
-        'pulpo',
-        'camarones',
-        'mejillones',
-        'pizzas',
-        'pastas',
-        'postres',
-        'bebidas',
-        'vinos'
-      ],
       index: true,
     },
     subcategoria: {
@@ -62,6 +47,20 @@ const menuItemSchema = new Schema<IMenuItem>(
     destacado: {
       type: Boolean,
       default: false,
+    },
+    // Seasonal availability
+    temporada: {
+      type: Boolean,
+      default: false,
+    },
+    temporadaNombre: {
+      type: String,
+    },
+    temporadaInicio: {
+      type: Date,
+    },
+    temporadaFin: {
+      type: Date,
     },
     // Allergens
     alergenos: {

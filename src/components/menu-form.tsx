@@ -30,9 +30,14 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
     proteina: [],
     picante: false,
     destacado: false,
+    temporada: false,
+    temporadaNombre: '',
+    temporadaInicio: undefined,
+    temporadaFin: undefined,
     alergenos: [],
   });
   const [loading, setLoading] = useState(false);
+  const [customCategoria, setCustomCategoria] = useState('');
 
   useEffect(() => {
     if (item) {
@@ -155,7 +160,15 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
                 <select
                   required
                   value={formData.categoria}
-                  onChange={(e) => setFormData({ ...formData, categoria: e.target.value as Categoria })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '__custom__') {
+                      setCustomCategoria('');
+                    } else {
+                      setFormData({ ...formData, categoria: value as Categoria });
+                      setCustomCategoria('');
+                    }
+                  }}
                   className="w-full h-10 px-3 py-2 rounded-sm border-2 border-border bg-background text-sm focus:outline-none focus:border-foreground focus:ring-2 focus:ring-foreground/20 hover:border-foreground/50 transition-all"
                 >
                   {categorias.map((cat) => (
@@ -163,8 +176,31 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
                       {cat.label}
                     </option>
                   ))}
+                  <option value="__custom__">+ Nueva Categoría...</option>
                 </select>
               </div>
+
+              {formData.categoria === '__custom__' && (
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">
+                    Nombre de Nueva Categoría *
+                  </label>
+                  <Input
+                    required
+                    value={customCategoria}
+                    onChange={(e) => {
+                      const value = e.target.value.toLowerCase().replace(/\s+/g, '-');
+                      setCustomCategoria(value);
+                      setFormData({ ...formData, categoria: value as Categoria });
+                    }}
+                    placeholder="ej: sopas, bebidas-especiales..."
+                    className="rounded-sm"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Usa minúsculas y guiones. Ej: sopas, bebidas-especiales
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium mb-2">
@@ -278,7 +314,7 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
             </div>
 
             {/* Opciones */}
-            <div className="flex gap-6">
+            <div className="flex flex-wrap gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -298,7 +334,56 @@ export function MenuForm({ item, onClose, onSave }: MenuFormProps) {
                 />
                 <span className="text-sm font-medium">Destacado</span>
               </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.temporada || false}
+                  onChange={(e) => setFormData({ ...formData, temporada: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm font-medium">Platillo de Temporada</span>
+              </label>
             </div>
+
+            {/* Temporada Details */}
+            {formData.temporada && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border/50">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Nombre de Temporada
+                  </label>
+                  <Input
+                    value={formData.temporadaNombre || ''}
+                    onChange={(e) => setFormData({ ...formData, temporadaNombre: e.target.value })}
+                    placeholder="Ej: Verano, Navidad..."
+                    className="rounded-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Fecha Inicio
+                  </label>
+                  <Input
+                    type="date"
+                    value={formData.temporadaInicio ? new Date(formData.temporadaInicio).toISOString().split('T')[0] : ''}
+                    onChange={(e) => setFormData({ ...formData, temporadaInicio: e.target.value })}
+                    className="rounded-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Fecha Fin
+                  </label>
+                  <Input
+                    type="date"
+                    value={formData.temporadaFin ? new Date(formData.temporadaFin).toISOString().split('T')[0] : ''}
+                    onChange={(e) => setFormData({ ...formData, temporadaFin: e.target.value })}
+                    className="rounded-sm"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Actions */}

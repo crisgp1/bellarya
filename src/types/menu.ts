@@ -1,4 +1,4 @@
-export type Categoria = 'entradas' | 'bellarya-in-casa' | 'pescados' | 'pollo' | 'salmon' | 'pulpo' | 'camarones' | 'mejillones' | 'pizzas' | 'pastas' | 'postres' | 'bebidas' | 'vinos';
+export type Categoria = string; // Dynamic categories - any string is allowed
 
 export type Alergeno = 'gluten' | 'lacteos' | 'huevo' | 'pescado' | 'mariscos' | 'frutos-secos' | 'soja' | 'apio' | 'mostaza' | 'sesamo' | 'sulfitos';
 
@@ -15,6 +15,12 @@ export interface MenuItem {
   proteina?: string[];
   picante?: boolean;
   destacado?: boolean;
+  // Seasonal fields
+  temporada?: boolean;
+  temporadaNombre?: string;
+  temporadaInicio?: Date | string;
+  temporadaFin?: Date | string;
+  // Allergens
   alergenos?: Alergeno[];
   preparadoEnMesa?: boolean;
   // English translations
