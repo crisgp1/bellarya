@@ -30,9 +30,9 @@ export function LoginForm() {
       if (result?.error) {
         setError('Invalid email or password');
         setIsLoading(false);
-      } else {
-        router.push('/dashboard');
-        router.refresh();
+      } else if (result?.ok) {
+        // Login successful - redirect to dashboard
+        window.location.href = '/dashboard';
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
