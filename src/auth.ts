@@ -31,6 +31,21 @@ async function getUser(email: string): Promise<{ id: string; name: string; email
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).role = token.role as string;
+      }
+      return session;
+    },
+  },
   providers: [
     Credentials({
       async authorize(credentials) {

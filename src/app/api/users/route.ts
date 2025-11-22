@@ -23,6 +23,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if user is admin
+    if ((session.user as any).role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     await dbConnect();
 
     const users = await User.find({}, { password: 0 })
@@ -50,12 +58,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if user is admin
+    if ((session.user as any).role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const validationResult = createUserSchema.safeParse(body);
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { success: false, error: validationResult.error.errors[0].message },
+        { success: false, error: validationResult.error.issues[0].message },
         { status: 400 }
       );
     }
@@ -64,19 +80,10 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return NextResponse.json(
-        { success: false, error: 'User with this email already exists' },
-        { status: 400 }
-      );
-    }
-
-    // Hash password
+    // Hash password before attempting to create user
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user - rely on unique index to prevent duplicates
     const newUser = await User.create({
       name,
       email: email.toLowerCase(),
@@ -96,8 +103,17 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json({ success: true, data: userResponse }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating user:', error);
+
+    // Handle duplicate key error specifically
+    if (error.code === 11000 || error.message?.includes('duplicate key')) {
+      return NextResponse.json(
+        { success: false, error: 'User with this email already exists' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, error: 'Failed to create user' },
       { status: 500 }

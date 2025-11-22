@@ -151,14 +151,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if user is admin
+    if ((session.user as any).role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     await dbConnect();
 
     const newItem = await MenuItem.create(body);
 
     return NextResponse.json({ success: true, data: newItem }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating menu item:', error);
+
+    // Handle duplicate key error
+    if (error.code === 11000 || error.message?.includes('duplicate key')) {
+      return NextResponse.json(
+        { success: false, error: 'Menu item with this ID already exists' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, error: 'Failed to create menu item' },
       { status: 500 }

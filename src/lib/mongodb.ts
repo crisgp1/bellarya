@@ -26,9 +26,18 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
+// Lock to prevent concurrent connection attempts
+let connectionLock: Promise<typeof mongoose> | null = null;
+
 async function connectDB(): Promise<typeof mongoose> {
+  // Return existing connection if available
   if (cached.conn) {
     return cached.conn;
+  }
+
+  // If there's an active connection attempt, wait for it
+  if (connectionLock) {
+    return connectionLock;
   }
 
   if (!cached.promise) {
@@ -37,10 +46,21 @@ async function connectDB(): Promise<typeof mongoose> {
       dbName: 'bellarya',
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('✅ MongoDB conectado a la base de datos: bellarya');
-      return mongoose;
-    });
+    // Create connection lock
+    connectionLock = mongoose.connect(MONGODB_URI, opts)
+      .then((mongoose) => {
+        console.log('✅ MongoDB conectado a la base de datos: bellarya');
+        cached.conn = mongoose;
+        connectionLock = null;
+        return mongoose;
+      })
+      .catch((e) => {
+        connectionLock = null;
+        cached.promise = null;
+        throw e;
+      });
+
+    cached.promise = connectionLock;
   }
 
   try {

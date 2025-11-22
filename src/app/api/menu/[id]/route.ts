@@ -44,6 +44,14 @@ export async function PUT(
       );
     }
 
+    // Check if user is admin
+    if ((session.user as any).role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     await connectDB();
     const { id } = await params;
@@ -85,14 +93,22 @@ export async function DELETE(
       );
     }
 
+    // Check if user is admin
+    if ((session.user as any).role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     await connectDB();
     const { id } = await params;
     const item = await MenuItem.findByIdAndDelete(id);
 
     if (!item) {
       return NextResponse.json(
-        { success: false, error: 'Menu item not found' },
-        { status: 404 }
+        { success: true, message: 'Item already deleted or does not exist' },
+        { status: 200 }
       );
     }
 
